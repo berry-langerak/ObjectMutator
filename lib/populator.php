@@ -49,8 +49,8 @@ class Populator {
 	 * @return boolean
 	 */
 	static protected function useSetter( $object, $property, $values ) {
-		$setter = 'set' . ucfirst( $property->name );
-		if( in_array( $setter, get_class_methods( $property->class ) ) ) {
+		$setter = 'set' . strtolower( $property->name );
+		if( in_array( $setter, array_map( 'strtolower', get_class_methods( $property->class ) ) ) ) {
 			$object->$setter( $values[$property->name] );
 			return true;
 		}

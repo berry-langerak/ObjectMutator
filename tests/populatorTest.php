@@ -9,7 +9,7 @@ class Test_Of_Populator extends PHPUnit_Framework_TestCase {
 			'bar' => 'world'
 		);
 
-		$this->assertEquals( 'Goodbye, cruel world!', \Populator::populate( new Testclass, $values )->greet( ) );
+		$this->assertEquals( 'Goodbye, cruel world!', \ObjectMutator\Populator::populate( new TestclassPopulator, $values )->greet( ) );
 	}
 
 	function testDefaultValuesCanBeOverwritten( ) {
@@ -19,20 +19,19 @@ class Test_Of_Populator extends PHPUnit_Framework_TestCase {
 			'qux' => 'lovely'
 		);
 
-		$this->assertEquals( 'Hello, lovely world!', \Populator::populate( new Testclass, $values )->greet( ) );
+		$this->assertEquals( 'Hello, lovely world!', \ObjectMutator\Populator::populate( new TestclassPopulator, $values )->greet( ) );
 	}
 
-	function testUserDefinedSetterMethodsWillBeUsedIfPresent( ) {
+	function testUserDefinedSetterMethodsWillBeUsedEvenIfPrivate( ) {
 		$values = array(
-			'foo' => 'automatic, baby!'
+			'foo' => 'hello'
 		);
 
-		$this->assertEquals( 'Automatic, baby!', \Populator::populate( new Testclass, $values )->foo( ) );
+		$this->assertEquals( 'HELLO', \ObjectMutator\Populator::populate( new SecondTestclassPopulator( ), $values )->foo( ) );
 	}
 }
 
-
-class Testclass {
+class TestclassPopulator {
 	protected $foo;
 
 	private $baz;
@@ -48,6 +47,17 @@ class Testclass {
 	}
 
 	function foo( ) {
+		return $this->foo;
+	}
+}
+
+class SecondTestclassPopulator {
+	private $foo;
+	private function setFoo( $value ) {
+		$this->foo = strtoupper( $value );
+	}
+
+	public function foo( ) {
 		return $this->foo;
 	}
 }

@@ -14,7 +14,7 @@ class Reflector {
 	 * @return \ReflectionClass
 	 */
 	static public function reflect( $object ) {
-		$classname = get_class( $object );
+		$classname = self::classname( $object );
 		if( !array_key_exists( $classname, self::$reflections ) ) {
 			self::$reflections[$classname] = new \ReflectionClass( $classname );
 		}
@@ -41,5 +41,14 @@ class Reflector {
 			return $method;
 		}
 		throw new \Exception( 'Ah noes!' );
+	}
+
+	static public function classname( $object ) {
+		if( !is_object( $object ) ) {
+			throw new \Exception( 
+				sprintf( 'ObjectMutator needs an instance of an object, but "%s" (%s) was given.', $object, \gettype( $object ) )
+			);
+		}
+		return get_class( $object );
 	}
 }

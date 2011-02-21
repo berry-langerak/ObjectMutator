@@ -39,6 +39,15 @@ class Test_Of_Extractor extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals( $expected, $this->extractor->extract( new ThirdTestClassExtractor( ) ) );
 	}
+
+	function testExtractCanExtractToAnObjectInsteadOfArray( ) {
+		$expected = new stdClass( );
+		$expected->foo = 'foo';
+		$expected->bar = 'bar';
+		$expected->baz = 'BAZ';
+
+		$this->assertEquals( $expected, $this->extractor->extract( new ThirdTestClassExtractor( ), new stdClass( ) ) );
+	}
 }
 
 

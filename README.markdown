@@ -58,3 +58,21 @@
     $extractor = new \ObjectMutator\Extractor( );
 	$result = $extractor->extract( new YourObject );
 	echo $result['foo']; // this is now "ooF", as the private accessor is called.
+
+The extract can also extract the properties values to another object, such as a
+data transfer object.
+
+
+	class YourObject {
+		protected $foo;
+		public function __construct( ) {
+			$this->foo = 'test';
+		}
+		private function getFoo( ) {
+			return str_reverse( ucfirst( $this->foo ) );
+		}
+	}
+
+    $extractor = new \ObjectMutator\Extractor( );
+	$result = $extractor->extract( new YourObject, new stdClass( ) );
+	echo $result->foo; // this is now "ooF", as the private accessor is called.

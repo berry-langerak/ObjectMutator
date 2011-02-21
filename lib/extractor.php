@@ -8,6 +8,7 @@ require_once dirname( __FILE__ ) . '/reflector.php';
  * whether or not those properties are protected, or even private.
  *
  * @author Berry Langerak <berry@berryllium.nl>
+ * @todo Make sure extract can also extract to objects (e.g. DataTransferObjects)
  */
 class Extractor {
 
@@ -24,12 +25,28 @@ class Extractor {
 	 * @param Object $object
 	 * @return Array
 	 */
-	public function extract( $object ) {
-		$properties = array( );
+	public function extract( $object, $target = array( ) ) {
 		foreach( $this->reflector( )->reflect( $object )->getProperties( ) as $property ) {
-			$properties[$property->getName( )] = $this->value( $object, $property );
+			$target = $this->setValue( $target, $property->getName( ), $this->value( $object, $property ) );
 		}
-		return $properties;
+		return $target;
+	}
+
+	/**
+	 * Sets the value of property $property to value $value on target $target. The target may be an array or an object.
+	 *
+	 * @param mixed $target
+	 * @param string $property
+	 * @param mixed $value
+	 * @return mixed
+	 */
+	protected function setValue( $target, $property, $value ) {
+		if( \is_object( $target ) ) {
+			$target->$property = $value;
+			return $target;
+		}
+		$target[$property] = $value;
+		return $target;
 	}
 
 	/**

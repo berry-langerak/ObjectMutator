@@ -19,7 +19,8 @@
 		}
 	}
 
-	$result = \ObjectMutator\Populator::populate( new YourObject, array( 'foo' => 'bar' ) );
+	$populator = new \ObjectMutator\Populator;
+	$result = $populator->populate( new YourObject, array( 'foo' => 'bar' ) );
 	echo $result->foo( ); // YourObject::$foo is now "bar".
 
 	/**
@@ -36,7 +37,8 @@
 		}
 	}
 
-	$result = \ObjectMutator\Populator::populate( new YourObject, array( 'foo' => 'bar' ) );
+	$populator = new \ObjectMutator\Populator;
+	$result = $populator->populate( new YourObject, array( 'foo' => 'bar' ) );
 	echo $result->foo( ); // YourObject::$foo is now "raB".
 
 #### Extractor
@@ -53,5 +55,6 @@
 		}
 	}
 
-	$result = \ObjectMutator\Extractor::extract( new YourObject );
+    $extractor = new \ObjectMutator\Extractor( );
+	$result = $extractor->extract( new YourObject );
 	echo $result['foo']; // this is now "ooF", as the private accessor is called.

@@ -12,15 +12,22 @@ require_once dirname( __FILE__ ) . '/reflector.php';
 class Extractor {
 
 	/**
+	 * Contains an instance of the Reflector object.
+	 * 
+	 * @var \ObjectMutator\Reflector
+	 */
+	protected $reflector;
+
+	/**
 	 * Extracts all properties of object $object and returns them in an array.
 	 *
 	 * @param Object $object
 	 * @return Array
 	 */
-	static public function extract( $object ) {
+	public function extract( $object ) {
 		$properties = array( );
-		foreach( Reflector::reflect( $object )->getProperties( ) as $property ) {
-			$properties[$property->getName( )] = self::value( $object, $property );
+		foreach( $this->reflector( )->reflect( $object )->getProperties( ) as $property ) {
+			$properties[$property->getName( )] = $this->value( $object, $property );
 		}
 		return $properties;
 	}
@@ -34,8 +41,8 @@ class Extractor {
 	 * @param \ReflectionProperty $property
 	 * @return mixed
 	 */
-	static protected function value( $object, \ReflectionProperty $property ) {
-		if( !( $value = self::useGetter( $object, $property ) ) ) {
+	protected function value( $object, \ReflectionProperty $property ) {
+		if( !( $value = $this->useGetter( $object, $property ) ) ) {
 			$property->setAccessible( true );
 			return $property->getValue( $object );
 		}
@@ -51,11 +58,23 @@ class Extractor {
 	 * @param \ReflectionProperty $property
 	 * @return mixed
 	 */
-	static protected function useGetter( $object, \ReflectionProperty $property ) {
+	protected function useGetter( $object, \ReflectionProperty $property ) {
 		$method = 'get' . $property->name;
-		if( Reflector::hasMethod( $object, $method ) ) {
-			return Reflector::method( $object, $method )->invoke( $object );
+		if( $this->reflector( )->hasMethod( $object, $method ) ) {
+			return $this->reflector( )->method( $object, $method )->invoke( $object );
 		}
 		return false;
+	}
+
+	/**
+	 * Lazy loads the Reflector object.
+	 *
+	 * @return \ObjectMutator\Reflector
+	 */
+	protected function reflector( ) {
+		if( $this->reflector === null ) {
+			$this->reflector = new \ObjectMutator\Reflector( );
+		}
+		return $this->reflector;
 	}
 }

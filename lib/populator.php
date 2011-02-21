@@ -10,6 +10,12 @@ require_once dirname( __FILE__ ) . '/reflector.php';
  * @author Berry Langerak <berry@berryllium.nl>
  */
 class Populator {
+	/**
+	 * Contains an instance of the Reflector object.
+	 *
+	 * @var \ObjectMutator\Reflector
+	 */
+	protected $reflector;
 
 	/**
 	 * Tries to populate object $object with the values from array $values, then
@@ -19,10 +25,10 @@ class Populator {
 	 * @param Array $values
 	 * @return Object
 	 */
-	static public function populate( $object, $values ) {
-		foreach( Reflector::reflect( $object )->getProperties( ) as $property ) {
+	public function populate( $object, $values ) {
+		foreach( $this->reflector( )->reflect( $object )->getProperties( ) as $property ) {
 			if( array_key_exists( $property->name, $values ) ) {
-				if( !self::useSetter( $object, $property, $values ) ) {
+				if( !$this->useSetter( $object, $property, $values ) ) {
 					$property->setAccessible( true );
 					$property->setValue( $object, $values[$property->name] );
 				}
@@ -40,12 +46,24 @@ class Populator {
 	 * @param array $values
 	 * @return boolean
 	 */
-	static protected function useSetter( $object, $property, $values ) {
+	protected function useSetter( $object, $property, $values ) {
 		$setter = 'set' . strtolower( $property->name );
-		if( Reflector::hasMethod( $object, $setter ) ) {
-			Reflector::method( $object, $setter )->invoke( $object, $values[$property->name] );
+		if( $this->reflector( )->hasMethod( $object, $setter ) ) {
+			$this->reflector( )->method( $object, $setter )->invoke( $object, $values[$property->name] );
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Lazy loads the Reflector object.
+	 *
+	 * @return \ObjectMutator\Reflector
+	 */
+	protected function reflector( ) {
+		if( $this->reflector === null ) {
+			$this->reflector = new \ObjectMutator\Reflector( );
+		}
+		return $this->reflector;
 	}
 }

@@ -3,13 +3,23 @@
 require_once realpath( dirname( __FILE__ ) ) . '/../lib/populator.php';
 
 class Test_Of_Populator extends PHPUnit_Framework_TestCase {
+	/**
+	 * Contains the populator
+	 * @var \ObjectMutator\Populator
+	 */
+	protected $populator;
+
+	function setUp( ) {
+		$this->populator = new \ObjectMutator\Populator( );
+	}
+
 	function testPrivateAndProtectedValuesWillBeSet( ) {
 		$values = array(
 			'baz' => 'Goodbye',
 			'bar' => 'world'
 		);
 
-		$this->assertEquals( 'Goodbye, cruel world!', \ObjectMutator\Populator::populate( new TestclassPopulator, $values )->greet( ) );
+		$this->assertEquals( 'Goodbye, cruel world!', $this->populator->populate( new TestclassPopulator, $values )->greet( ) );
 	}
 
 	function testDefaultValuesCanBeOverwritten( ) {
@@ -19,7 +29,7 @@ class Test_Of_Populator extends PHPUnit_Framework_TestCase {
 			'qux' => 'lovely'
 		);
 
-		$this->assertEquals( 'Hello, lovely world!', \ObjectMutator\Populator::populate( new TestclassPopulator, $values )->greet( ) );
+		$this->assertEquals( 'Hello, lovely world!', $this->populator->populate( new TestclassPopulator, $values )->greet( ) );
 	}
 
 	function testUserDefinedSetterMethodsWillBeUsedEvenIfPrivate( ) {
@@ -27,7 +37,7 @@ class Test_Of_Populator extends PHPUnit_Framework_TestCase {
 			'foo' => 'hello'
 		);
 
-		$this->assertEquals( 'HELLO', \ObjectMutator\Populator::populate( new SecondTestclassPopulator( ), $values )->foo( ) );
+		$this->assertEquals( 'HELLO', $this->populator->populate( new SecondTestclassPopulator( ), $values )->foo( ) );
 	}
 }
 

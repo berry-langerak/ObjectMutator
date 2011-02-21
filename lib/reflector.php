@@ -2,9 +2,9 @@
 namespace ObjectMutator;
 
 class Reflector {
-	static protected $reflections = array( );
+	protected $reflections = array( );
 
-	static protected $methods = array( );
+	protected $methods = array( );
 
 	/**
 	 * Tries to create a \ReflectionClass for object $object. If it was previously
@@ -13,37 +13,36 @@ class Reflector {
 	 * @param Object $object
 	 * @return \ReflectionClass
 	 */
-	static public function reflect( $object ) {
-		$classname = self::classname( $object );
-		if( !array_key_exists( $classname, self::$reflections ) ) {
-			self::$reflections[$classname] = new \ReflectionClass( $classname );
+	public function reflect( $object ) {
+		$classname = $this->classname( $object );
+		if( !array_key_exists( $classname, $this->reflections ) ) {
+			$this->reflections[$classname] = new \ReflectionClass( $classname );
 		}
-		return self::$reflections[$classname];
+		return $this->reflections[$classname];
 	}
 
-	static public function hasMethod( $object, $method ) {
-		return array_key_exists( $method, self::methods( self::reflect( $object ) ) );
+	public function hasMethod( $object, $method ) {
+		return array_key_exists( $method, $this->methods( $this->reflect( $object ) ) );
 	}
 
-	static protected function methods( \ReflectionClass $class ) {
-		if( !isset( self::$methods[$class->name] ) ) {
+	protected function methods( \ReflectionClass $class ) {
+		if( !isset( $this->methods[$class->name] ) ) {
 			foreach( $class->getMethods( ) as $method ) {
-				self::$methods[$class->name][strtolower( $method->name )] = $method;
+				$this->methods[$class->name][strtolower( $method->name )] = $method;
 			}
 		}
-		return self::$methods[$class->name];
+		return $this->methods[$class->name];
 	}
 
-	static public function method( $object, $method ) {
-		if( self::hasMethod( $object, $method ) ) {
-			$method = self::reflect( $object )->getMethod( $method );
+	public function method( $object, $method ) {
+		if( $this->hasMethod( $object, $method ) ) {
+			$method = $this->reflect( $object )->getMethod( $method );
 			$method->setAccessible( true );
 			return $method;
 		}
-		throw new \Exception( 'Ah noes!' );
 	}
 
-	static public function classname( $object ) {
+	public function classname( $object ) {
 		if( !is_object( $object ) ) {
 			throw new \Exception( 
 				sprintf( 'ObjectMutator needs an instance of an object, but "%s" (%s) was given.', $object, \gettype( $object ) )

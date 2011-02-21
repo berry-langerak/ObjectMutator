@@ -5,7 +5,10 @@
  */
 require_once realpath( dirname( __FILE__ ) ) . '/../lib/extractor.php';
 
-class Test_Of_Extractor extends PHPUnit_Framework_Testcase {
+class Test_Of_Extractor extends PHPUnit_Framework_TestCase {
+	function setUp( ) {
+		$this->extractor = new \ObjectMutator\Extractor( );
+	}
 	function testPrivateAndProtectedValuesWillBeRetrieved( ) {
 		$expected = array(
 			'foo' => 'foo',
@@ -14,7 +17,7 @@ class Test_Of_Extractor extends PHPUnit_Framework_Testcase {
 			'qux' => 'qux'
 		);
 
-		$this->assertEquals( $expected, \ObjectMutator\Extractor::extract( new TestclassExtractor ) );
+		$this->assertEquals( $expected, $this->extractor->extract( new TestclassExtractor ) );
 	}
 
 	function testUserDefinedGetterMethodsWillBeUsedIfPresent( ) {
@@ -24,7 +27,7 @@ class Test_Of_Extractor extends PHPUnit_Framework_Testcase {
 			'qux' => 'Qux'
 		);
 
-		$this->assertEquals( $expected, \ObjectMutator\Extractor::extract( new SecondTestClassExtractor ) );
+		$this->assertEquals( $expected, $this->extractor->extract( new SecondTestClassExtractor ) );
 	}
 
 	function testUserDefinedGetterMethodsWillBeUsedEvenIfPrivate( ) {
@@ -34,7 +37,7 @@ class Test_Of_Extractor extends PHPUnit_Framework_Testcase {
 			'baz' => 'BAZ'
 		);
 
-		$this->assertEquals( $expected, \ObjectMutator\Extractor::extract( new ThirdTestClassExtractor( ) ) );
+		$this->assertEquals( $expected, $this->extractor->extract( new ThirdTestClassExtractor( ) ) );
 	}
 }
 
